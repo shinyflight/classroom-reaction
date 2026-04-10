@@ -7,10 +7,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100vh;overflow:hidden;background:transparent;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#fff}
+html,body{height:100vh;overflow:hidden;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#fff}
+
+/* 이화 배경 */
+body:not(.student-body):not(.entry-body){
+  background:linear-gradient(160deg,#0b2318 0%,#173d28 40%,#1a4d32 70%,#0e2a1c 100%);
+}
+
+/* 벚꽃 파티클 */
+.petal{position:fixed;pointer-events:none;z-index:0;opacity:0;
+  animation:fall linear infinite;}
+@keyframes fall{
+  0%  {transform:translateY(-40px) rotate(0deg) scale(1);opacity:.7}
+  80% {opacity:.5}
+  100%{transform:translateY(105vh) rotate(360deg) scale(.6);opacity:0}
+}
+
+/* 배경 광원 */
+.glow{position:fixed;pointer-events:none;border-radius:50%;filter:blur(90px);z-index:0}
+.glow1{width:600px;height:600px;background:rgba(52,168,90,.08);top:-150px;left:-100px}
+.glow2{width:500px;height:500px;background:rgba(100,200,130,.06);bottom:-120px;right:60px}
 
 /* ── 강의자 ── */
-.ins{position:fixed;inset:0;pointer-events:none}
+.ins{position:fixed;inset:0;pointer-events:none;z-index:1}
 
 /* 떠오르는 이모지 */
 @keyframes rise{0%{transform:translateY(0) scale(1);opacity:1}75%{opacity:1}100%{transform:translateY(-480px) scale(.6);opacity:0}}
@@ -25,32 +44,35 @@ html,body{height:100vh;overflow:hidden;background:transparent;font-family:'Apple
   overflow-y:auto;overflow-x:hidden;
   pointer-events:auto;
   padding:4px 2px;
-  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;
+  z-index:2;
 }
 .chat-log::-webkit-scrollbar{width:4px}
 .chat-log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px}
 .chat-item{
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.12);
+  background:rgba(10,40,22,.7);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(100,200,130,.2);
   border-radius:14px;padding:8px 12px;
   animation:fadeIn .3s ease
 }
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.chat-item .who{font-size:11px;color:#8b949e;margin-bottom:2px}
+.chat-item .who{font-size:11px;color:#6fcf97;margin-bottom:2px}
 .chat-item .msg{font-size:13px;word-break:break-all;line-height:1.4}
 
 /* 컨트롤 패널 (우측 상단) */
 .ctrl{
   position:fixed;top:14px;right:14px;
-  background:rgba(0,0,0,.65);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:16px;
+  background:rgba(8,30,18,.8);
+  backdrop-filter:blur(24px);
+  border:1px solid rgba(100,200,130,.25);
+  border-radius:18px;
   pointer-events:auto;
   overflow:hidden;
   transition:width .3s,height .3s;
   min-width:44px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(100,200,130,.1);
+  z-index:2;
 }
 .ctrl-bar{
   display:flex;align-items:center;gap:10px;
@@ -119,7 +141,9 @@ body.entry-body{background:#0d1117}
 <script>
 const NTFY='https://ntfy.sh';
 const EMOJIS=['❓','💡','✋','👍','🔥','😮','😴','🙏'];
-const NAMES=['곰🐻','토끼🐰','여우🦊','판다🐼','펭귄🐧','고양이🐱','강아지🐶','부엉이🦉'];
+const _adj=['신나는','졸린','배고픈','귀여운','용감한','수줍은','엉뚱한','똑똑한','느긋한','깜찍한'];
+const _ani=['곰🐻','토끼🐰','여우🦊','판다🐼','펭귄🐧','고양이🐱','강아지🐶','부엉이🦉','다람쥐🐿️','햄스터🐹'];
+const NAMES=_adj.flatMap(a=>_ani.map(n=>a+' '+n));
 
 const hash=location.hash;
 if(hash.startsWith('#s-')) initStudent(hash.slice(3));
@@ -216,7 +240,9 @@ function initInstructor(sid){
     el.innerHTML=`<div class="who">${esc(p.name||'익명')}</div><div class="msg">${esc(p.content)}</div>`;
     log.appendChild(el);
     log.scrollTop=log.scrollHeight;
-    chatCnt++; document.getElementById('cc').textContent=chatCnt;
+    chatCnt++;
+    document.getElementById('cc2').textContent=chatCnt;
+    document.getElementById('ec2').textContent=reactionCnt; document.getElementById('cc').textContent=chatCnt;
   };
 }
 
