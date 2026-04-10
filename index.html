@@ -2,197 +2,187 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>강의 반응</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100vh;overflow:hidden;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#fff}
 
-/* 이화 배경 */
-body:not(.student-body):not(.entry-body){
-  background:linear-gradient(160deg,#0b2318 0%,#173d28 40%,#1a4d32 70%,#0e2a1c 100%);
+/* ═══ 이화 배경 ═══ */
+.ewha-bg{
+  position:fixed;inset:0;z-index:0;
+  background:linear-gradient(150deg,#071c10 0%,#0f3320 40%,#174028 70%,#0a2216 100%);
 }
+.glow{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none}
+.g1{width:700px;height:700px;background:rgba(34,139,70,.12);top:-200px;left:-150px}
+.g2{width:500px;height:500px;background:rgba(60,179,100,.08);bottom:-150px;right:50px}
+.g3{width:300px;height:300px;background:rgba(144,238,144,.06);top:40%;left:40%}
 
-/* 벚꽃 파티클 */
-.petal{position:fixed;pointer-events:none;z-index:0;opacity:0;
-  animation:fall linear infinite;}
-@keyframes fall{
-  0%  {transform:translateY(-40px) rotate(0deg) scale(1);opacity:.7}
-  80% {opacity:.5}
-  100%{transform:translateY(105vh) rotate(360deg) scale(.6);opacity:0}
+/* 벚꽃 */
+@keyframes petal-fall{
+  0%  {transform:translateY(-20px) rotate(0deg);opacity:0}
+  10% {opacity:.8}
+  90% {opacity:.4}
+  100%{transform:translateY(102vh) rotate(400deg);opacity:0}
 }
+.petal{position:fixed;top:0;pointer-events:none;z-index:1;animation:petal-fall linear infinite}
 
-/* 배경 광원 */
-.glow{position:fixed;pointer-events:none;border-radius:50%;filter:blur(90px);z-index:0}
-.glow1{width:600px;height:600px;background:rgba(52,168,90,.08);top:-150px;left:-100px}
-.glow2{width:500px;height:500px;background:rgba(100,200,130,.06);bottom:-120px;right:60px}
-
-/* ── 강의자 ── */
-.ins{position:fixed;inset:0;pointer-events:none;z-index:1}
+/* ═══ 강의자 레이아웃 ═══ */
+.ins{position:fixed;inset:0;z-index:2;display:flex}
+.stage{flex:1;position:relative;overflow:hidden}
 
 /* 떠오르는 이모지 */
-@keyframes rise{0%{transform:translateY(0) scale(1);opacity:1}75%{opacity:1}100%{transform:translateY(-480px) scale(.6);opacity:0}}
-.float{position:absolute;bottom:80px;pointer-events:none;z-index:10;animation:rise 3.4s ease-out forwards}
-.float-emoji{font-size:56px;filter:drop-shadow(0 2px 12px rgba(0,0,0,.6))}
+@keyframes rise{
+  0%  {transform:translateY(0) scale(1);opacity:1}
+  70% {opacity:1}
+  100%{transform:translateY(-520px) scale(.5);opacity:0}
+}
+.floater{position:absolute;bottom:60px;animation:rise 3.5s ease-out forwards;pointer-events:none;z-index:10}
+.floater-emoji{font-size:58px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.6))}
 
-/* 채팅 로그 (우측 하단, 영구) */
+/* 채팅 로그 (우하단, 쌓임) */
 .chat-log{
-  position:fixed;bottom:16px;right:16px;
-  width:260px;max-height:340px;
+  position:fixed;bottom:18px;right:290px;
+  width:250px;max-height:350px;
   display:flex;flex-direction:column;gap:6px;
-  overflow-y:auto;overflow-x:hidden;
-  pointer-events:auto;
-  padding:4px 2px;
-  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;
-  z-index:2;
+  overflow-y:auto;padding:4px 2px;z-index:5;
+  scrollbar-width:thin;scrollbar-color:rgba(144,238,144,.2) transparent
 }
-.chat-log::-webkit-scrollbar{width:4px}
-.chat-log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px}
-.chat-item{
-  background:rgba(10,40,22,.7);
-  backdrop-filter:blur(16px);
-  border:1px solid rgba(100,200,130,.2);
+.chat-log::-webkit-scrollbar{width:3px}
+.chat-log::-webkit-scrollbar-thumb{background:rgba(144,238,144,.2);border-radius:4px}
+@keyframes pop-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.chat-bubble{
+  background:rgba(7,28,16,.75);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(100,220,130,.2);
   border-radius:14px;padding:8px 12px;
-  animation:fadeIn .3s ease
+  animation:pop-in .3s ease;
 }
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.chat-item .who{font-size:11px;color:#6fcf97;margin-bottom:2px}
-.chat-item .msg{font-size:13px;word-break:break-all;line-height:1.4}
+.chat-bubble .who{font-size:11px;color:#6fcf97;margin-bottom:3px}
+.chat-bubble .txt{font-size:13px;line-height:1.45;word-break:break-all}
 
-/* 컨트롤 패널 (우측 상단) */
-.ctrl{
-  position:fixed;top:14px;right:14px;
-  background:rgba(8,30,18,.8);
+/* 컨트롤 패널 */
+.panel{
+  width:275px;
+  background:rgba(6,22,12,.82);
   backdrop-filter:blur(24px);
-  border:1px solid rgba(100,200,130,.25);
-  border-radius:18px;
-  pointer-events:auto;
-  overflow:hidden;
-  transition:width .3s,height .3s;
-  min-width:44px;
-  box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(100,200,130,.1);
-  z-index:2;
+  border-left:1px solid rgba(100,220,130,.18);
+  display:flex;flex-direction:column;gap:14px;
+  padding:20px 16px;overflow-y:auto;z-index:5;
+  box-shadow:-4px 0 30px rgba(0,0,0,.4)
 }
-.ctrl-bar{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;cursor:pointer;user-select:none;
-  white-space:nowrap
-}
-.ctrl-bar .dot{width:10px;height:10px;border-radius:50%;background:#da3633;flex-shrink:0}
-.ctrl-bar .dot.on{background:#3fb950}
-.ctrl-bar .label{font-size:13px;font-weight:600;flex:1}
-.ctrl-bar .arr{font-size:11px;color:#8b949e;transition:transform .3s}
-.ctrl-bar .arr.open{transform:rotate(180deg)}
-.ctrl-body{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
-.ctrl-body.hidden{display:none}
+.panel-title{font-size:15px;font-weight:700;color:#c8f5d8;display:flex;align-items:center;gap:8px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0;transition:background .3s}
+.live-dot.on{background:#34d058;box-shadow:0 0 8px #34d058}
 
-.toggle{width:100%;padding:11px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
-.toggle.start{background:#238636;color:#fff}
-.toggle.start:hover{background:#2ea043}
-.toggle.stop{background:#da3633;color:#fff}
-.toggle.stop:hover{background:#f85149}
+.tog{width:100%;padding:12px;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.tog.start{background:linear-gradient(135deg,#166534,#22c55e);color:#fff;box-shadow:0 4px 16px rgba(34,197,94,.25)}
+.tog.start:hover{filter:brightness(1.1)}
+.tog.stop{background:linear-gradient(135deg,#991b1b,#ef4444);color:#fff;box-shadow:0 4px 16px rgba(239,68,68,.25)}
+.tog.stop:hover{filter:brightness(1.1)}
 
-.sid-row{display:flex;align-items:center;gap:8px}
-.sid-label{font-size:11px;color:#8b949e}
-.sid-val{font-size:18px;font-weight:800;letter-spacing:.18em;color:#58a6ff}
+.sid-card{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:10px 12px;text-align:center}
+.sid-label{font-size:11px;color:#6fcf97;margin-bottom:4px}
+.sid-val{font-size:24px;font-weight:800;letter-spacing:.22em;color:#a7f3c0}
 
-.url-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:7px 10px;color:#e6edf3;font-size:11px;outline:none;font-family:inherit}
-.url-input:focus{border-color:#58a6ff}
-.url-input::placeholder{color:#484f58}
-.gen-btn{width:100%;padding:8px;background:#1d6fe8;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer}
-.gen-btn:hover{background:#1a63d1}
-.qr-wrap{background:#fff;border-radius:10px;padding:8px;display:flex;justify-content:center}
-.stats{font-size:11px;color:#8b949e;text-align:center}
-.stats span{color:#e6edf3;font-weight:700}
-.clear-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px;color:#8b949e;font-size:11px;cursor:pointer;width:100%}
-.clear-btn:hover{color:#fff}
+.field-label{font-size:11px;color:#6fcf97;margin-bottom:5px}
+.url-in{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(100,220,130,.18);border-radius:8px;padding:8px 10px;color:#e6edf3;font-size:11px;outline:none;font-family:inherit}
+.url-in:focus{border-color:#6fcf97}
+.url-in::placeholder{color:#2d5a3d}
+.qr-btn{width:100%;padding:9px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:8px;color:#a7f3c0;font-size:12px;font-weight:700;cursor:pointer}
+.qr-btn:hover{background:rgba(34,197,94,.25)}
+.qr-box{background:#fff;border-radius:10px;padding:8px;display:flex;justify-content:center;display:none}
+.stat-row{font-size:11px;color:#6fcf97;text-align:center}
+.stat-row b{color:#a7f3c0}
+.clr-btn{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(100,220,130,.12);border-radius:8px;padding:7px;color:#6fcf97;font-size:11px;cursor:pointer}
+.clr-btn:hover{color:#a7f3c0;background:rgba(255,255,255,.08)}
+.ewha-mark{font-size:10px;color:rgba(100,220,130,.3);text-align:center;letter-spacing:.1em;margin-top:auto;padding-top:8px}
 
-/* ── 학생 ── */
-body.student-body{background:#0d1117}
-.stu{max-width:430px;margin:0 auto;padding:24px 20px;display:flex;flex-direction:column;gap:22px;height:100vh;overflow-y:auto}
-.stu h2{font-size:20px;font-weight:700}
-.stu .sub{font-size:13px;color:#8b949e;margin-top:5px}
-.sec-title{font-size:13px;color:#8b949e;margin-bottom:10px;font-weight:600}
-.emoji-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.ebtn{font-size:38px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 0;cursor:pointer;transition:all .15s;text-align:center}
-.ebtn:active{transform:scale(.88);background:rgba(255,255,255,.18)}
-.ebtn.pop{animation:epop .25s ease}
-@keyframes epop{0%{transform:scale(1)}50%{transform:scale(1.25)}100%{transform:scale(1)}}
-.chat-row{display:flex;gap:8px}
-.chat-input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px;color:#fff;font-size:15px;outline:none;font-family:inherit}
-.chat-input:focus{border-color:#58a6ff}
-.chat-input::placeholder{color:#484f58}
-.send-btn{background:#1d6fe8;border:none;border-radius:12px;padding:12px 16px;color:#fff;font-size:15px;cursor:pointer;font-weight:600}
-.status-msg{text-align:center;font-size:13px;color:#8b949e;min-height:20px}
+/* ═══ 학생 ═══ */
+body.s-mode{background:linear-gradient(150deg,#071c10 0%,#0f3320 50%,#0a2216 100%)}
+.stu{max-width:420px;margin:0 auto;padding:28px 20px;display:flex;flex-direction:column;gap:22px;height:100vh;overflow-y:auto}
+.stu-title{font-size:21px;font-weight:700;color:#c8f5d8}
+.stu-sub{font-size:13px;color:#6fcf97;margin-top:5px}
+.sec{font-size:13px;color:#6fcf97;font-weight:600;margin-bottom:10px}
+.egrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ebtn{font-size:36px;background:rgba(34,197,94,.07);border:1px solid rgba(100,220,130,.14);border-radius:16px;padding:14px 0;cursor:pointer;transition:all .15s;text-align:center}
+.ebtn:active,.ebtn.pop{transform:scale(.88);background:rgba(34,197,94,.22)}
+.crow{display:flex;gap:8px}
+.cinput{flex:1;background:rgba(34,197,94,.06);border:1px solid rgba(100,220,130,.18);border-radius:12px;padding:12px 14px;color:#fff;font-size:15px;outline:none;font-family:inherit}
+.cinput:focus{border-color:#6fcf97}
+.cinput::placeholder{color:#2d5a3d}
+.sbtn{background:linear-gradient(135deg,#166534,#22c55e);border:none;border-radius:12px;padding:12px 16px;color:#fff;font-size:15px;cursor:pointer;font-weight:600}
+.flash{text-align:center;font-size:13px;color:#6fcf97;min-height:20px;transition:opacity .3s}
 
-/* entry */
-body.entry-body{background:#0d1117}
-.entry{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:18px;padding:24px}
-.entry h2{font-size:22px;font-weight:700}
-.entry p{font-size:14px;color:#8b949e;text-align:center}
-.code-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px 20px;color:#fff;font-size:24px;text-align:center;letter-spacing:.2em;width:100%;max-width:260px;outline:none;font-family:inherit;font-weight:700;text-transform:uppercase}
-.code-input:focus{border-color:#58a6ff}
-.join-btn{background:#238636;border:none;border-radius:12px;padding:14px 32px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;width:100%;max-width:260px}
+/* ═══ 세션 입력 ═══ */
+body.e-mode{background:linear-gradient(150deg,#071c10 0%,#0f3320 50%,#0a2216 100%)}
+.epage{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:18px;padding:24px}
+.epage h2{font-size:22px;font-weight:700;color:#c8f5d8}
+.epage p{font-size:14px;color:#6fcf97;text-align:center}
+.ccode{background:rgba(34,197,94,.06);border:1px solid rgba(100,220,130,.2);border-radius:14px;padding:14px 20px;color:#fff;font-size:24px;text-align:center;letter-spacing:.22em;width:100%;max-width:260px;outline:none;font-family:inherit;font-weight:700;text-transform:uppercase}
+.ccode:focus{border-color:#6fcf97}
+.jbtn{background:linear-gradient(135deg,#166534,#22c55e);border:none;border-radius:12px;padding:14px 32px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;width:100%;max-width:260px;box-shadow:0 4px 20px rgba(34,197,94,.3)}
 </style>
 </head>
 <body>
+<div class="ewha-bg"><div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div></div>
 <div id="app"></div>
+
 <script>
 const NTFY='https://ntfy.sh';
 const EMOJIS=['❓','💡','✋','👍','🔥','😮','😴','🙏'];
-const _adj=['신나는','졸린','배고픈','귀여운','용감한','수줍은','엉뚱한','똑똑한','느긋한','깜찍한'];
-const _ani=['곰🐻','토끼🐰','여우🦊','판다🐼','펭귄🐧','고양이🐱','강아지🐶','부엉이🦉','다람쥐🐿️','햄스터🐹'];
-const NAMES=_adj.flatMap(a=>_ani.map(n=>a+' '+n));
+const ADJ=['신나는','졸린','배고픈','귀여운','용감한','수줍은','엉뚱한','똑똑한','느긋한','깜찍한'];
+const ANI=['곰🐻','토끼🐰','여우🦊','판다🐼','펭귄🐧','고양이🐱','강아지🐶','부엉이🦉','다람쥐🐿️','햄스터🐹'];
+const NAMES=ADJ.flatMap(a=>ANI.map(n=>a+' '+n));
 
-const hash=location.hash;
-if(hash.startsWith('#s-')) initStudent(hash.slice(3));
-else if(hash==='#e') initEntry();
-else{ const sid=Math.random().toString(36).slice(2,8).toUpperCase(); initInstructor(sid); }
+// 벚꽃 파티클
+const PETALS=['🌸','🌿','✿','❀','🍃'];
+for(let i=0;i<20;i++){
+  const p=document.createElement('div');
+  p.className='petal';
+  p.textContent=PETALS[i%PETALS.length];
+  p.style.cssText=`left:${Math.random()*100}%;font-size:${9+Math.random()*12}px;animation-duration:${9+Math.random()*14}s;animation-delay:${-Math.random()*14}s`;
+  document.body.appendChild(p);
+}
 
-/* ────────────── 강의자 ────────────── */
+// 라우팅
+const h=location.hash;
+if(h.startsWith('#s-')) initStudent(h.slice(3));
+else if(h==='#e')       initEntry();
+else                    initInstructor(Math.random().toString(36).slice(2,8).toUpperCase());
+
+/* ─── 강의자 ─── */
 function initInstructor(sid){
   const topic='liveclass2025-'+sid;
-  let active=false,es=null,t0=0,reactionCnt=0,chatCnt=0,panelOpen=true;
+  let on=false, es=null, t0=0, ec=0, cc=0;
 
   document.getElementById('app').innerHTML=`
-  <div class="ins" id="ins">
-    <div class="chat-log" id="chatLog"></div>
-    <div class="ctrl" id="ctrl">
-      <div class="ctrl-bar" onclick="togglePanel()">
-        <div class="dot" id="dot"></div>
-        <span class="label">강의 반응</span>
-        <span class="arr open" id="arr">▲</span>
+  <div class="ins">
+    <div class="stage" id="stage"></div>
+    <div class="chat-log" id="clog"></div>
+    <div class="panel">
+      <div class="panel-title"><div class="live-dot" id="ldot"></div>강의 반응 시스템</div>
+      <button class="tog start" id="tog" onclick="toggleSess()">▶ 수업 시작</button>
+      <div class="sid-card">
+        <div class="sid-label">세션 코드</div>
+        <div class="sid-val">${sid}</div>
       </div>
-      <div class="ctrl-body" id="cbody">
-        <button class="toggle start" id="tog" onclick="toggleSession()">▶ 수업 시작</button>
-        <div class="sid-row"><span class="sid-label">세션</span><span class="sid-val">${sid}</span></div>
-        <div>
-          <div style="font-size:11px;color:#8b949e;margin-bottom:5px">이 페이지 주소 붙여넣기</div>
-          <input class="url-input" id="urlIn" placeholder="https://...">
-          <div style="height:6px"></div>
-          <button class="gen-btn" onclick="genQR()">QR 생성</button>
-        </div>
-        <div class="qr-wrap" id="qrWrap" style="display:none"><div id="qrc"></div></div>
-        <div class="stats">이모지 <span id="ec">0</span> · 채팅 <span id="cc">0</span></div>
-        <button class="clear-btn" onclick="clearChat()">채팅 내역 지우기</button>
-      </div>
+      <div class="qr-box" id="qrbox" style="display:flex"><div id="qrc"></div></div>
+      <div class="stat-row">이모지 <b id="ec">0</b>개 &nbsp;·&nbsp; 채팅 <b id="cc">0</b>개</div>
+      <div id="estat" style="display:flex;flex-direction:column;gap:4px"></div>
+      <button class="clr-btn" onclick="clearLog()">채팅 내역 지우기</button>
+      <div class="ewha-mark">EWHA WOMANS UNIVERSITY</div>
+      <div class="ewha-mark" style="margin-top:2px">© Uiwon Hwang</div>
     </div>
   </div>`;
 
-  window.togglePanel=()=>{
-    panelOpen=!panelOpen;
-    document.getElementById('cbody').className='ctrl-body'+(panelOpen?'':' hidden');
-    document.getElementById('arr').className='arr'+(panelOpen?' open':'');
-  };
-
-  window.toggleSession=()=>{
-    active=!active;
-    const tog=document.getElementById('tog');
-    const dot=document.getElementById('dot');
-    if(active){
-      tog.textContent='⏹ 수업 종료'; tog.className='toggle stop';
-      dot.className='dot on';
+  window.toggleSess=()=>{
+    on=!on;
+    document.getElementById('tog').className='tog '+(on?'stop':'start');
+    document.getElementById('tog').textContent=on?'⏹ 수업 종료':'▶ 수업 시작';
+    document.getElementById('ldot').className='live-dot'+(on?' on':'');
+    if(on){
       t0=Date.now()/1000;
       es=new EventSource(`${NTFY}/${topic}/sse`);
       es.onmessage=e=>{
@@ -200,103 +190,100 @@ function initInstructor(sid){
           const d=JSON.parse(e.data);
           if(d.event!=='message'||d.time<t0-2)return;
           const p=JSON.parse(d.message);
-          if(p.type==='emoji') spawnEmoji(p);
-          else addChat(p);
+          if(p.type==='emoji') spawnEmoji(p.content);
+          else                 addChat(p);
         }catch{}
       };
     } else {
-      tog.textContent='▶ 수업 시작'; tog.className='toggle start';
-      dot.className='dot';
       if(es){es.close();es=null;}
     }
   };
 
-  window.genQR=()=>{
-    const val=document.getElementById('urlIn').value.trim();
-    if(!val)return;
-    const full=val.split('#')[0]+'#s-'+sid;
-    const wrap=document.getElementById('qrWrap');
-    const qrcEl=document.getElementById('qrc');
-    qrcEl.innerHTML=''; wrap.style.display='flex';
-    try{ new QRCode(qrcEl,{text:full,width:180,height:180,colorDark:'#000',colorLight:'#fff'}); }
-    catch{ qrcEl.innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(full)}" style="width:180px;height:180px">`; }
-  };
+  const BASE_URL='https://shinyflight.github.io/classroom-reaction/';
 
-  window.clearChat=()=>{ document.getElementById('chatLog').innerHTML=''; chatCnt=0; document.getElementById('cc').textContent=0; };
+  // QR 자동 생성
+  const qrFull=BASE_URL+'#s-'+sid;
+  try{ new QRCode(document.getElementById('qrc'),{text:qrFull,width:200,height:200,colorDark:'#000',colorLight:'#fff'}); }
+  catch{ document.getElementById('qrc').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrFull)}" style="width:200px;height:200px">`; }
 
-  window.spawnEmoji=p=>{
-    const ins=document.getElementById('ins');
-    const el=document.createElement('div'); el.className='float';
-    el.style.left=(Math.random()*72+8)+'%';
-    el.innerHTML=`<div class="float-emoji">${p.content}</div>`;
-    ins.appendChild(el);
-    reactionCnt++; document.getElementById('ec').textContent=reactionCnt;
-    setTimeout(()=>el.remove(),3600);
+  window.clearLog=()=>{document.getElementById('clog').innerHTML='';cc=0;document.getElementById('cc').textContent=0;};
+
+  window.spawnEmoji=content=>{
+    const el=document.createElement('div'); el.className='floater';
+    el.style.left=(5+Math.random()*80)+'%';
+    el.innerHTML=`<div class="floater-emoji">${content}</div>`;
+    document.getElementById('stage').appendChild(el);
+    ec++; document.getElementById('ec').textContent=ec;
+    emojiCount[content]=(emojiCount[content]||0)+1;
+    updateEmojiStats();
+    setTimeout(()=>el.remove(),3700);
   };
 
   window.addChat=p=>{
-    const log=document.getElementById('chatLog');
-    const el=document.createElement('div'); el.className='chat-item';
-    el.innerHTML=`<div class="who">${esc(p.name||'익명')}</div><div class="msg">${esc(p.content)}</div>`;
+    const log=document.getElementById('clog');
+    const el=document.createElement('div'); el.className='chat-bubble';
+    el.innerHTML=`<div class="who">${esc(p.name||'익명')}</div><div class="txt">${esc(p.content)}</div>`;
     log.appendChild(el);
     log.scrollTop=log.scrollHeight;
-    chatCnt++;
-    document.getElementById('cc2').textContent=chatCnt;
-    document.getElementById('ec2').textContent=reactionCnt; document.getElementById('cc').textContent=chatCnt;
+    cc++; document.getElementById('cc').textContent=cc;
   };
 }
 
-/* ────────────── 학생 ────────────── */
+/* ─── 학생 ─── */
 function initStudent(sid){
-  document.body.classList.add('student-body');
+  document.body.classList.add('s-mode');
   const topic='liveclass2025-'+sid;
-  const myName=NAMES[Math.floor(Math.random()*NAMES.length)];
+  const me=NAMES[Math.floor(Math.random()*NAMES.length)];
   document.getElementById('app').innerHTML=`
   <div class="stu">
-    <div><h2>📡 강의 참여</h2><p class="sub">나: ${myName} &nbsp;·&nbsp; 세션 <b style="color:#58a6ff">${sid}</b></p></div>
-    <div><div class="sec-title">반응 보내기</div>
-      <div class="emoji-grid">${EMOJIS.map((e,i)=>`<button class="ebtn" id="eb${i}" onclick="sendE('${e}',${i})">${e}</button>`).join('')}</div>
+    <div>
+      <div class="stu-title">📡 강의 참여</div>
+      <div class="stu-sub">나: ${me} &nbsp;·&nbsp; 세션 <b style="color:#a7f3c0">${sid}</b></div>
     </div>
-    <div><div class="sec-title">채팅 보내기</div>
-      <div class="chat-row">
-        <input class="chat-input" id="ci" placeholder="질문이나 의견..." maxlength="60" onkeydown="if(event.key==='Enter')sendC()">
-        <button class="send-btn" onclick="sendC()">전송</button>
+    <div>
+      <div class="sec">반응 보내기</div>
+      <div class="egrid">${EMOJIS.map((e,i)=>`<button class="ebtn" id="e${i}" onclick="se('${e}',${i})">${e}</button>`).join('')}</div>
+    </div>
+    <div>
+      <div class="sec">채팅 보내기</div>
+      <div class="crow">
+        <input class="cinput" id="ci" placeholder="질문이나 의견..." maxlength="60" onkeydown="if(event.key==='Enter')sc()">
+        <button class="sbtn" onclick="sc()">전송</button>
       </div>
     </div>
-    <div class="status-msg" id="sm"></div>
+    <div class="flash" id="fl"></div>
   </div>`;
 
-  window.sendE=async(emoji,idx)=>{
-    const b=document.getElementById('eb'+idx);
-    b.classList.add('pop'); setTimeout(()=>b.classList.remove('pop'),260);
-    try{ await post(topic,{type:'emoji',content:emoji,name:myName}); flash('전송됨 ✓'); }
-    catch{ flash('전송 실패 😢'); }
+  const post=async d=>{await fetch(`${NTFY}/${topic}`,{method:'POST',body:JSON.stringify(d)});};
+  const flash=m=>{const f=document.getElementById('fl');f.textContent=m;f.style.opacity=1;setTimeout(()=>f.style.opacity=0,1600);};
+
+  window.se=async(emoji,i)=>{
+    document.getElementById('e'+i).classList.add('pop');
+    setTimeout(()=>document.getElementById('e'+i).classList.remove('pop'),250);
+    try{await post({type:'emoji',content:emoji,name:me});flash('전송됨 ✓');}catch{flash('전송 실패 😢');}
   };
-  window.sendC=async()=>{
+  window.sc=async()=>{
     const inp=document.getElementById('ci'),txt=inp.value.trim();
     if(!txt)return;
-    try{ await post(topic,{type:'chat',content:txt,name:myName}); inp.value=''; flash('전송됨 ✓'); }
-    catch{ flash('전송 실패 😢'); }
+    try{await post({type:'chat',content:txt,name:me});inp.value='';flash('전송됨 ✓');}catch{flash('전송 실패 😢');}
   };
-  function flash(m){const s=document.getElementById('sm');s.textContent=m;setTimeout(()=>s.textContent='',1600);}
 }
 
-/* ────────────── 세션 코드 입력 ────────────── */
+/* ─── 세션 코드 입력 ─── */
 function initEntry(){
-  document.body.classList.add('entry-body');
+  document.body.classList.add('e-mode');
   document.getElementById('app').innerHTML=`
-  <div class="entry">
-    <div style="font-size:48px">📡</div>
+  <div class="epage">
+    <div style="font-size:52px">📡</div>
     <h2>강의 참여하기</h2>
     <p>강의자가 알려준 세션 코드를 입력하세요</p>
-    <input class="code-input" id="ci" maxlength="8" placeholder="AB12CD" onkeydown="if(event.key==='Enter')join()">
-    <button class="join-btn" onclick="join()">참여하기</button>
+    <input class="ccode" id="ci" maxlength="8" placeholder="AB12CD" onkeydown="if(event.key==='Enter')join()">
+    <button class="jbtn" onclick="join()">참여하기</button>
   </div>`;
   document.getElementById('ci').focus();
-  window.join=()=>{ const c=document.getElementById('ci').value.trim().toUpperCase(); if(c.length>=4){location.hash='#s-'+c;location.reload();} };
+  window.join=()=>{const c=document.getElementById('ci').value.trim().toUpperCase();if(c.length>=4){location.hash='#s-'+c;location.reload();}};
 }
 
-async function post(topic,data){ await fetch(`${NTFY}/${topic}`,{method:'POST',body:JSON.stringify(data)}); }
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
 </body>
