@@ -9,97 +9,59 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100vh;overflow:hidden;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#fff}
 
-/* ═══ 이화 배경 ═══ */
-.ewha-bg{
-  position:fixed;inset:0;z-index:0;
-  background:linear-gradient(150deg,#071c10 0%,#0f3320 40%,#174028 70%,#0a2216 100%);
-}
+.ewha-bg{position:fixed;inset:0;z-index:0;background:linear-gradient(150deg,#071c10 0%,#0f3320 40%,#174028 70%,#0a2216 100%)}
 .glow{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none}
 .g1{width:700px;height:700px;background:rgba(34,139,70,.12);top:-200px;left:-150px}
 .g2{width:500px;height:500px;background:rgba(60,179,100,.08);bottom:-150px;right:50px}
 .g3{width:300px;height:300px;background:rgba(144,238,144,.06);top:40%;left:40%}
 
-/* 벚꽃 */
-@keyframes petal-fall{
-  0%  {transform:translateY(-20px) rotate(0deg);opacity:0}
-  10% {opacity:.8}
-  90% {opacity:.4}
-  100%{transform:translateY(102vh) rotate(400deg);opacity:0}
-}
+@keyframes petal-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:0}10%{opacity:.8}90%{opacity:.4}100%{transform:translateY(102vh) rotate(400deg);opacity:0}}
 .petal{position:fixed;top:0;pointer-events:none;z-index:1;animation:petal-fall linear infinite}
 
-/* ═══ 강의자 레이아웃 ═══ */
-.ins{position:fixed;inset:0;z-index:2;display:flex}
+/* 강의자 */
+.ins{position:fixed;inset:0;z-index:2;display:flex;transition:all .3s}
 .stage{flex:1;position:relative;overflow:hidden}
 
-/* 떠오르는 이모지 */
-@keyframes rise{
-  0%  {transform:translateY(0) scale(1);opacity:1}
-  70% {opacity:1}
-  100%{transform:translateY(-520px) scale(.5);opacity:0}
-}
+@keyframes rise{0%{transform:translateY(0) scale(1);opacity:1}70%{opacity:1}100%{transform:translateY(-520px) scale(.5);opacity:0}}
 .floater{position:absolute;bottom:60px;animation:rise 3.5s ease-out forwards;pointer-events:none;z-index:10}
 .floater-emoji{font-size:58px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.6))}
 
-/* 채팅 로그 (우하단, 쌓임) */
-.chat-log{
-  position:fixed;bottom:18px;right:290px;
-  width:250px;max-height:350px;
-  display:flex;flex-direction:column;gap:6px;
-  overflow-y:auto;padding:4px 2px;z-index:5;
-  scrollbar-width:thin;scrollbar-color:rgba(144,238,144,.2) transparent
-}
+.chat-log{position:fixed;bottom:18px;right:290px;width:250px;max-height:350px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;padding:4px 2px;z-index:5;scrollbar-width:thin;scrollbar-color:rgba(144,238,144,.2) transparent;transition:right .3s}
+.chat-log.wide{right:18px}
 .chat-log::-webkit-scrollbar{width:3px}
 .chat-log::-webkit-scrollbar-thumb{background:rgba(144,238,144,.2);border-radius:4px}
 @keyframes pop-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.chat-bubble{
-  background:rgba(7,28,16,.75);
-  backdrop-filter:blur(18px);
-  border:1px solid rgba(100,220,130,.2);
-  border-radius:14px;padding:8px 12px;
-  animation:pop-in .3s ease;
-}
+.chat-bubble{background:rgba(7,28,16,.75);backdrop-filter:blur(18px);border:1px solid rgba(100,220,130,.2);border-radius:14px;padding:8px 12px;animation:pop-in .3s ease}
 .chat-bubble .who{font-size:11px;color:#6fcf97;margin-bottom:3px}
 .chat-bubble .txt{font-size:13px;line-height:1.45;word-break:break-all}
 
-/* 컨트롤 패널 */
-.panel{
-  width:275px;
-  background:rgba(6,22,12,.82);
-  backdrop-filter:blur(24px);
-  border-left:1px solid rgba(100,220,130,.18);
-  display:flex;flex-direction:column;gap:14px;
-  padding:20px 16px;overflow-y:auto;z-index:5;
-  box-shadow:-4px 0 30px rgba(0,0,0,.4)
-}
-.panel-title{font-size:15px;font-weight:700;color:#c8f5d8;display:flex;align-items:center;gap:8px}
-.live-dot{width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0;transition:background .3s}
-.live-dot.on{background:#34d058;box-shadow:0 0 8px #34d058}
+/* 사이드바 패널 */
+.panel{width:275px;min-width:275px;background:rgba(6,22,12,.82);backdrop-filter:blur(24px);border-left:1px solid rgba(100,220,130,.18);display:flex;flex-direction:column;gap:14px;padding:20px 16px;overflow-y:auto;z-index:5;box-shadow:-4px 0 30px rgba(0,0,0,.4);transition:all .3s;position:relative}
+.panel.hidden{width:0;min-width:0;padding:0;overflow:hidden;border:none}
 
-.tog{width:100%;padding:12px;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
-.tog.start{background:linear-gradient(135deg,#166534,#22c55e);color:#fff;box-shadow:0 4px 16px rgba(34,197,94,.25)}
-.tog.start:hover{filter:brightness(1.1)}
-.tog.stop{background:linear-gradient(135deg,#991b1b,#ef4444);color:#fff;box-shadow:0 4px 16px rgba(239,68,68,.25)}
-.tog.stop:hover{filter:brightness(1.1)}
+/* 패널 토글 버튼 */
+.ptog{position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:20;background:rgba(6,22,12,.9);border:1px solid rgba(100,220,130,.25);border-right:none;border-radius:10px 0 0 10px;padding:12px 8px;cursor:pointer;color:#6fcf97;font-size:16px;backdrop-filter:blur(12px);transition:right .3s;line-height:1}
+.ptog:hover{color:#a7f3c0;background:rgba(6,22,12,1)}
+
+.panel-title{font-size:15px;font-weight:700;color:#c8f5d8;display:flex;align-items:center;gap:8px}
+.live-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#34d058;box-shadow:0 0 8px #34d058}
 
 .sid-card{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:10px 12px;text-align:center}
 .sid-label{font-size:11px;color:#6fcf97;margin-bottom:4px}
 .sid-val{font-size:24px;font-weight:800;letter-spacing:.22em;color:#a7f3c0}
 
-.field-label{font-size:11px;color:#6fcf97;margin-bottom:5px}
-.url-in{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(100,220,130,.18);border-radius:8px;padding:8px 10px;color:#e6edf3;font-size:11px;outline:none;font-family:inherit}
-.url-in:focus{border-color:#6fcf97}
-.url-in::placeholder{color:#2d5a3d}
-.qr-btn{width:100%;padding:9px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:8px;color:#a7f3c0;font-size:12px;font-weight:700;cursor:pointer}
-.qr-btn:hover{background:rgba(34,197,94,.25)}
-.qr-box{background:#fff;border-radius:10px;padding:8px;display:flex;justify-content:center;display:none}
+.qr-box{background:#fff;border-radius:10px;padding:8px;display:flex;justify-content:center}
 .stat-row{font-size:11px;color:#6fcf97;text-align:center}
 .stat-row b{color:#a7f3c0}
+.estat{display:flex;flex-direction:column;gap:5px}
+.ebar{display:flex;align-items:center;gap:6px;font-size:12px}
+.ebar-track{flex:1;background:rgba(255,255,255,.08);border-radius:4px;height:8px;overflow:hidden}
+.ebar-fill{height:100%;background:linear-gradient(90deg,#166534,#22c55e);border-radius:4px;transition:width .4s}
 .clr-btn{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(100,220,130,.12);border-radius:8px;padding:7px;color:#6fcf97;font-size:11px;cursor:pointer}
 .clr-btn:hover{color:#a7f3c0;background:rgba(255,255,255,.08)}
-.ewha-mark{font-size:10px;color:rgba(100,220,130,.3);text-align:center;letter-spacing:.1em;margin-top:auto;padding-top:8px}
+.ewha-mark{font-size:10px;color:rgba(100,220,130,.3);text-align:center;letter-spacing:.1em;margin-top:auto;padding-top:4px}
 
-/* ═══ 학생 ═══ */
+/* 학생 */
 body.s-mode{background:linear-gradient(150deg,#071c10 0%,#0f3320 50%,#0a2216 100%)}
 .stu{max-width:420px;margin:0 auto;padding:28px 20px;display:flex;flex-direction:column;gap:22px;height:100vh;overflow-y:auto}
 .stu-title{font-size:21px;font-weight:700;color:#c8f5d8}
@@ -107,15 +69,15 @@ body.s-mode{background:linear-gradient(150deg,#071c10 0%,#0f3320 50%,#0a2216 100
 .sec{font-size:13px;color:#6fcf97;font-weight:600;margin-bottom:10px}
 .egrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .ebtn{font-size:36px;background:rgba(34,197,94,.07);border:1px solid rgba(100,220,130,.14);border-radius:16px;padding:14px 0;cursor:pointer;transition:all .15s;text-align:center}
-.ebtn:active,.ebtn.pop{transform:scale(.88);background:rgba(34,197,94,.22)}
+.ebtn:active{transform:scale(.88);background:rgba(34,197,94,.22)}
 .crow{display:flex;gap:8px}
-.cinput{flex:1;background:rgba(34,197,94,.06);border:1px solid rgba(100,220,130,.18);border-radius:12px;padding:12px 14px;color:#fff;font-size:15px;outline:none;font-family:inherit}
+.cinput{flex:1;background:rgba(34,197,94,.06);border:1px solid rgba(100,220,130,.18);border-radius:12px;padding:12px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit}
 .cinput:focus{border-color:#6fcf97}
 .cinput::placeholder{color:#2d5a3d}
-.sbtn{background:linear-gradient(135deg,#166534,#22c55e);border:none;border-radius:12px;padding:12px 16px;color:#fff;font-size:15px;cursor:pointer;font-weight:600}
+.sbtn{background:linear-gradient(135deg,#166534,#22c55e);border:none;border-radius:12px;padding:12px 13px;color:#fff;font-size:13px;cursor:pointer;font-weight:600;white-space:nowrap}
 .flash{text-align:center;font-size:13px;color:#6fcf97;min-height:20px;transition:opacity .3s}
 
-/* ═══ 세션 입력 ═══ */
+/* 세션 입력 */
 body.e-mode{background:linear-gradient(150deg,#071c10 0%,#0f3320 50%,#0a2216 100%)}
 .epage{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:18px;padding:24px}
 .epage h2{font-size:22px;font-weight:700;color:#c8f5d8}
@@ -128,85 +90,89 @@ body.e-mode{background:linear-gradient(150deg,#071c10 0%,#0f3320 50%,#0a2216 100
 <body>
 <div class="ewha-bg"><div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div></div>
 <div id="app"></div>
-
 <script>
 const NTFY='https://ntfy.sh';
+const BASE_URL='https://shinyflight.github.io/classroom-reaction/';
 const EMOJIS=['❓','💡','✋','👍','🔥','😮','😴','🙏'];
 const ADJ=['신나는','졸린','배고픈','귀여운','용감한','수줍은','엉뚱한','똑똑한','느긋한','깜찍한'];
 const ANI=['곰🐻','토끼🐰','여우🦊','판다🐼','펭귄🐧','고양이🐱','강아지🐶','부엉이🦉','다람쥐🐿️','햄스터🐹'];
 const NAMES=ADJ.flatMap(a=>ANI.map(n=>a+' '+n));
 
-// 벚꽃 파티클
+// 벚꽃
 const PETALS=['🌸','🌿','✿','❀','🍃'];
 for(let i=0;i<20;i++){
-  const p=document.createElement('div');
-  p.className='petal';
+  const p=document.createElement('div'); p.className='petal';
   p.textContent=PETALS[i%PETALS.length];
   p.style.cssText=`left:${Math.random()*100}%;font-size:${9+Math.random()*12}px;animation-duration:${9+Math.random()*14}s;animation-delay:${-Math.random()*14}s`;
   document.body.appendChild(p);
 }
 
-// 라우팅
 const h=location.hash;
-if(h.startsWith('#s-')) initStudent(h.slice(3));
-else if(h==='#e')       initEntry();
-else                    initInstructor(Math.random().toString(36).slice(2,8).toUpperCase());
+if(h.startsWith('#s-'))      initStudent(h.slice(3));
+else if(h==='#e')             initEntry();
+else                          initInstructor(Math.random().toString(36).slice(2,8).toUpperCase());
 
 /* ─── 강의자 ─── */
 function initInstructor(sid){
   const topic='liveclass2025-'+sid;
-  let on=false, es=null, t0=0, ec=0, cc=0;
+  let ec=0, cc=0, panelOpen=true;
+  const emojiCount={};
 
   document.getElementById('app').innerHTML=`
-  <div class="ins">
+  <div class="ins" id="ins">
     <div class="stage" id="stage"></div>
     <div class="chat-log" id="clog"></div>
-    <div class="panel">
-      <div class="panel-title"><div class="live-dot" id="ldot"></div>강의 반응 시스템</div>
-      <button class="tog start" id="tog" onclick="toggleSess()">▶ 수업 시작</button>
+    <div class="panel" id="panel">
+      <div class="panel-title"><div class="live-dot"></div>강의 반응 시스템</div>
       <div class="sid-card">
         <div class="sid-label">세션 코드</div>
         <div class="sid-val">${sid}</div>
       </div>
-      <div class="qr-box" id="qrbox" style="display:flex"><div id="qrc"></div></div>
+      <div class="qr-box"><div id="qrc"></div></div>
       <div class="stat-row">이모지 <b id="ec">0</b>개 &nbsp;·&nbsp; 채팅 <b id="cc">0</b>개</div>
-      <div id="estat" style="display:flex;flex-direction:column;gap:4px"></div>
-      <button class="clr-btn" onclick="clearLog()">채팅 내역 지우기</button>
+      <div class="estat" id="estat"></div>
+      <button class="clr-btn" onclick="clearAll()">채팅 · 이모지 기록 지우기</button>
       <div class="ewha-mark">EWHA WOMANS UNIVERSITY</div>
       <div class="ewha-mark" style="margin-top:2px">© Uiwon Hwang</div>
     </div>
-  </div>`;
+  </div>
+  <button class="ptog" id="ptog" onclick="togglePanel()">사이드바</button>`;
 
-  window.toggleSess=()=>{
-    on=!on;
-    document.getElementById('tog').className='tog '+(on?'stop':'start');
-    document.getElementById('tog').textContent=on?'⏹ 수업 종료':'▶ 수업 시작';
-    document.getElementById('ldot').className='live-dot'+(on?' on':'');
-    if(on){
-      t0=Date.now()/1000;
-      es=new EventSource(`${NTFY}/${topic}/sse`);
-      es.onmessage=e=>{
-        try{
-          const d=JSON.parse(e.data);
-          if(d.event!=='message'||d.time<t0-2)return;
-          const p=JSON.parse(d.message);
-          if(p.type==='emoji') spawnEmoji(p.content);
-          else                 addChat(p);
-        }catch{}
-      };
-    } else {
-      if(es){es.close();es=null;}
-    }
-  };
-
-  const BASE_URL='https://shinyflight.github.io/classroom-reaction/';
-
-  // QR 자동 생성
+  // QR 생성
   const qrFull=BASE_URL+'#s-'+sid;
   try{ new QRCode(document.getElementById('qrc'),{text:qrFull,width:200,height:200,colorDark:'#000',colorLight:'#fff'}); }
   catch{ document.getElementById('qrc').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrFull)}" style="width:200px;height:200px">`; }
 
-  window.clearLog=()=>{document.getElementById('clog').innerHTML='';cc=0;document.getElementById('cc').textContent=0;};
+  // ntfy 구독 (즉시 시작)
+  const t0=Date.now()/1000;
+  const es=new EventSource(`${NTFY}/${topic}/sse`);
+  es.onmessage=e=>{
+    try{
+      const d=JSON.parse(e.data);
+      if(d.event!=='message'||d.time<t0-2)return;
+      const p=JSON.parse(d.message);
+      if(p.type==='emoji') spawnEmoji(p.content);
+      else                 addChat(p);
+    }catch{}
+  };
+
+  window.togglePanel=()=>{
+    panelOpen=!panelOpen;
+    document.getElementById('panel').classList.toggle('hidden',!panelOpen);
+    document.getElementById('clog').classList.toggle('wide',!panelOpen);
+    document.getElementById('ptog').textContent=panelOpen?'▶':'◀';
+    document.getElementById('ptog').style.right=panelOpen?'275px':'0';
+  };
+  setTimeout(()=>{document.getElementById('ptog').style.right='275px';document.getElementById('ptog').textContent='▶';},50);
+
+  window.clearAll=()=>{
+    document.getElementById('clog').innerHTML='';
+    document.getElementById('estat').innerHTML='';
+    Object.keys(emojiCount).forEach(k=>delete emojiCount[k]);
+    ec=0; cc=0;
+    document.getElementById('ec').textContent=0;
+    document.getElementById('cc').textContent=0;
+  };
 
   window.spawnEmoji=content=>{
     const el=document.createElement('div'); el.className='floater';
@@ -215,7 +181,7 @@ function initInstructor(sid){
     document.getElementById('stage').appendChild(el);
     ec++; document.getElementById('ec').textContent=ec;
     emojiCount[content]=(emojiCount[content]||0)+1;
-    updateEmojiStats();
+    renderEmojiStats();
     setTimeout(()=>el.remove(),3700);
   };
 
@@ -227,6 +193,17 @@ function initInstructor(sid){
     log.scrollTop=log.scrollHeight;
     cc++; document.getElementById('cc').textContent=cc;
   };
+
+  function renderEmojiStats(){
+    const sorted=Object.entries(emojiCount).sort((a,b)=>b[1]-a[1]);
+    const max=sorted[0]?.[1]||1;
+    document.getElementById('estat').innerHTML=sorted.map(([e,n])=>`
+      <div class="ebar">
+        <span style="font-size:17px;width:24px;text-align:center">${e}</span>
+        <div class="ebar-track"><div class="ebar-fill" style="width:${Math.round(n/max*100)}%"></div></div>
+        <span style="color:#a7f3c0;min-width:20px;text-align:right">${n}</span>
+      </div>`).join('');
+  }
 }
 
 /* ─── 학생 ─── */
@@ -258,8 +235,8 @@ function initStudent(sid){
   const flash=m=>{const f=document.getElementById('fl');f.textContent=m;f.style.opacity=1;setTimeout(()=>f.style.opacity=0,1600);};
 
   window.se=async(emoji,i)=>{
-    document.getElementById('e'+i).classList.add('pop');
-    setTimeout(()=>document.getElementById('e'+i).classList.remove('pop'),250);
+    const b=document.getElementById('e'+i);
+    b.style.transform='scale(.85)'; setTimeout(()=>b.style.transform='',200);
     try{await post({type:'emoji',content:emoji,name:me});flash('전송됨 ✓');}catch{flash('전송 실패 😢');}
   };
   window.sc=async()=>{
@@ -269,7 +246,7 @@ function initStudent(sid){
   };
 }
 
-/* ─── 세션 코드 입력 ─── */
+/* ─── 세션 입력 ─── */
 function initEntry(){
   document.body.classList.add('e-mode');
   document.getElementById('app').innerHTML=`
